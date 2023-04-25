@@ -1,0 +1,28 @@
+<div id="roomTitle">
+  <h2 id="roomName"><%= roomName %></h2>
+</div>
+
+<div id="main" >
+  <div>
+    <div>
+      <form id="url" >
+        <input type="text" id="youtubeURL" placeholder="Enter YouTube link" />
+        <button type="submit" >Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var rooms = document.getElementById("roomName").innerHTML.split(":");
+  var roomName = rooms[rooms.length - 1];
+  var socket = io({
+    query: {
+      roomName: roomName,
+    },
+  });
+  var expected = "unstarted";
+</script>
