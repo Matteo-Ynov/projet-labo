@@ -11,6 +11,29 @@
       </form>
     </div>
   </div>
+  <div>
+    <div>
+      <div>
+        <div id="player"></div>
+      </div>
+    </div>
+    <div id="chat-div">
+      <ul>
+        <li>
+          <div>
+            <ul></ul>
+          </div>
+          <inputplaceholder="Type here..." />
+        </li>
+        <li>
+          <div>
+            <h3 Enter username:</h3>
+            <input type="text" maxlength="14" />
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -25,4 +48,32 @@
     },
   });
   var expected = "unstarted";
+
+  $(function () {
+    $("#url").submit(function (e) {
+      e.preventDefault();
+      socket.emit("newVideo", $("#youtubeURL").val(), roomName);
+      $("#youtubeURL").val("");
+      return false;
+    });
+  });
+
+  var tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName("script")[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  var player;
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player("player", {
+      height: "360",
+      width: "640",
+      videoId: "mhvKXuLAjYI",
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange,
+      },
+    });
+  }
+
 </script>
