@@ -1,35 +1,41 @@
+<head>
+  <meta charset="utf-8">
+  <title>Youtube Sync</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.css">
+  <link rel="stylesheet" href="/stylesheets/room.css">
+</head>
 
-<div id="roomTitle">
-  <h2 id="roomName"><%= roomName %></h2>
+<div id="roomTitle" class="ui main text container center aligned">
+  <h2 class="ui header" id="roomName"><%= roomName %></h2>
 </div>
 
-<div id="main" >
-  <div>
-    <div>
-      <form id="url" >
+<div id="main" class="ui three centered column grid">
+  <div class="row">
+    <div class="ten wide column">
+      <form id="url" class="ui action input">
         <input type="text" id="youtubeURL" placeholder="Enter YouTube link" />
-        <button type="submit" >Submit</button>
+        <button type="submit" class="ui button lightgrey">Submit</button>
       </form>
     </div>
   </div>
-  <div>
-    <div>
-      <div>
+  <div class="row">
+    <div class="eight wide column">
+      <div class="videoWrapper">
         <div id="player"></div>
       </div>
     </div>
-    <div id="chat-div">
-      <ul>
-        <li>
-          <div>
-            <ul></ul>
+    <div id="chat-div" class="two wide column">
+      <ul class="pages">
+        <li class="chat page">
+          <div class="chatArea">
+            <ul class="messages"></ul>
           </div>
-          <inputplaceholder="Type here..." />
+          <input class="inputMessage" placeholder="Type here..." />
         </li>
-        <li>
-          <div>
-            <h3 Enter username:</h3>
-            <input type="text" maxlength="14" />
+        <li class="login page">
+          <div class="form">
+            <h3 class="title">Enter username:</h3>
+            <input class="usernameInput" type="text" maxlength="14" />
           </div>
         </li>
       </ul>
@@ -38,6 +44,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="/js/main.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
@@ -77,4 +84,64 @@
     });
   }
 
+  function onPlayerReady(event) {
+    console.log("ready");
+
+    socket.on("playPlayer", function () {
+      expected = "play";
+      playVideo();
+    });
+
+    socket.on("pausePlayer", function () {
+      expected = "pause";
+      pauseVideo();
+    });
+
+    socket.on("bufferingPlayer", function (time) {
+      player.seekTo(time, true);
+    });
+
+    socket.on("newVideo", function (id) {
+      console.log(id);
+      player.loadVideoById(id, 0);
+    });
+
+    socket.on("newUser", function () {
+      socket.emit("requestCurrentVideo");
+    });
+  }
+
+  function emitState(playerStatus) {
+    if (playerStatus == 0) {
+      socket.emit("end", roomName);
+    } else if (playerStatus == 1 && expected != "play") {
+      socket.emit("play", roomName);
+    } else if (playerStatus == 2 && expected != "pause") {
+      socket.emit("pause", roomName);
+    } else if (playerStatus == 3) {
+      socket.emit("buffering", player.getCurrentTime(), roomName);
+    } else if (playerStatus == 5) {
+      socket.emit("status5");
+    } else if (playerStatus == -1) {
+      socket.emit("statusminus1");
+    }
+  }
+
+  function onPlayerStateChange(event) {
+    emitState(event.data);
+  }
+
+  function stopVideo() {
+    player.stopVideo();
+  }
+
+  function pauseVideo() {
+    player.pauseVideo();
+  }
+
+  function playVideo() {
+    player.playVideo();
+  }
+
 </script>
+
