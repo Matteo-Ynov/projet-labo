@@ -38,7 +38,7 @@ $(function () {
     if (data.numUsers === 1) {
       message += "There is currently 1 user";
     } else {
-      message += "There are currently" + data.numUsers + " users";
+      message += "There are currently " + data.numUsers + " users";
     }
     log(message);
   };
@@ -85,7 +85,7 @@ $(function () {
     var $usernameDiv = $('<span class="username"/>')
       .text(data.username)
       .css("color", getUsernameColor(data.username));
-    var $messageBodyDiv = $('<span class="messageBody">').text(data.message);
+    var $messageBodyDiv = $('<span class="messageBody">').text(" " + data.message);
 
     var typingClass = data.typing ? "typing" : "";
     var $messageDiv = $('<li class="message"/>')
@@ -199,7 +199,7 @@ $(function () {
 
   socket.on("login", (data) => {
     connected = true;
-    var message = "Welcome to Youtube-Sync!";
+    var message = "Welcome to the chat";
     log(message, {
       prepend: true,
     });
